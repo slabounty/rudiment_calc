@@ -1,3 +1,4 @@
+require "optparse"
 require "prawn"
 
 RUDIMENTS_PER_PAGE = 5
@@ -12,7 +13,8 @@ def print_histogram(rudiment_count)
   end
 end
 
-def draw_notes(x_0, y_0, width, tab_space, bars_per_line)
+def draw_notes(x_0, y_0, width, tab_space, bars_per_line, key, rudiment)
+  puts "rudiment = #{rudiment}"
   three_height = height_of("3")
   cur_x = x_0+16
   (1..BARS_PER_LINE).each do |bar|
@@ -31,7 +33,7 @@ def draw_notes(x_0, y_0, width, tab_space, bars_per_line)
   end
 end
 
-def draw_tab(x_0, y_0, width, tab_space)
+def draw_tab(x_0, y_0, width, tab_space, key, rudiment)
   stroke do
     # just lower the current y position
     cur_x = x_0
@@ -55,28 +57,70 @@ def draw_tab(x_0, y_0, width, tab_space)
     end
 
     # Draw notes
-    draw_notes(x_0, y_0, width, tab_space, BARS_PER_LINE)
+    draw_notes(x_0, y_0, width, tab_space, BARS_PER_LINE, key, rudiment)
   end
 end
 
-def generate_rudiment_pdf(rudiment_count)
-  Prawn::Document.generate("rudiments.pdf") do
+def generate_rudiment_pdf(rudiment_count, output_file, key, number_of_rudiments)
+  Prawn::Document.generate(output_file) do
     text "Rudiments!"
     x_0 = 0
     y_0 = 670
     width = 512
 
-    (1..RUDIMENTS_PER_PAGE).each do |i|
-      draw_tab(x_0, y_0, width, TAB_LINE_SPACING)
-      y_0 -= ((RUDIMENTS_PER_PAGE-1)*TAB_LINE_SPACING + RUDIMENT_SPACING)
+
+    number_of_pages = (number_of_rudiments.to_f / RUDIMENTS_PER_PAGE.to_f).ceil
+    puts "number_of_pages = #{number_of_pages}"
+
+    rc = rudiment_count.to_a
+    rc_element = 0
+
+    (1..number_of_pages).each do |page|
+      (1..RUDIMENTS_PER_PAGE).each do |i|
+        rudiment = rc[rc_element][0]
+        draw_tab(x_0, y_0, width, TAB_LINE_SPACING, key, rudiment)
+        y_0 -= ((RUDIMENTS_PER_PAGE-1)*TAB_LINE_SPACING + RUDIMENT_SPACING)
+        rc_element += 1
+      end
+      x_0 = 0
+      y_0 = 670
+      width = 512
+      start_new_page unless page == number_of_pages
     end
+    number_pages "Page <page> of <total>", at: [bounds.right - 100, 0]
   end
 end
 
+# Main
+
+# 1. Define a structure to store your parsed options
+options = {
+  verbose: false,    # Default values
+  key: "C",
+  output_file: "rudiments.pdf",
+  number_of_rudiments: 10,
+}
+parser = OptionParser.new
+parser.on('-k KEY', '--key', 'Key to generate rudiments in') do |value|
+  options[:key] = value
+end
+parser.on('-n COUNT', '--number_of_rudiments', 'Number of rudiments') do |value|
+  options[:number_of_rudiments] = value.to_i
+end
+parser.on('-v', '--verbose', 'Print everything') do |value|
+  options[:verbose] = true
+end
+parser.on('-o OUTPUT_FILE', '--output_file', 'Output PDF file') do |value|
+  options[:output_file] = value
+end
+parser.parse!
+
+puts "options = #{options}"
+
 puts "input file = #{ARGV[0]}"
-file = ARGV[0]
+input_file = ARGV[0]
 rudiment_count = {}
-File.foreach(file) do |line|
+File.foreach(input_file) do |line|
   line.chomp!.downcase!
   next if line.start_with?("title")
   if rudiment_count.has_key?(line)
@@ -90,4 +134,4 @@ rudiment_count = rudiment_count.sort_by { |_key, value| -value }.to_h
 
 print_histogram(rudiment_count)
 
-generate_rudiment_pdf(rudiment_count)
+generate_rudiment_pdf(rudiment_count, options[:output_file], options[:key], options[:number_of_rudiments])
