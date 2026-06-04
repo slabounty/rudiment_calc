@@ -27,7 +27,95 @@ KEYS = {
       { string: 1, fret: "0" },
       { string: 1, fret: "0" },
     ]
-  }
+  },
+  "D" => {
+    bass_line: [
+      { string: 6, fret: "0" },
+      { string: 0, fret: "0" },
+      { string: 4, fret: "0" },
+      { string: 0, fret: "0" },
+      { string: 5, fret: "0" },
+      { string: 0, fret: "0" },
+      { string: 4, fret: "0" },
+      { string: 0, fret: "0" },
+    ],
+    melody_line: [
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+    ]
+  },
+  "A" => {
+    bass_line: [
+      { string: 5, fret: "0" },
+      { string: 0, fret: "0" },
+      { string: 4, fret: "2" },
+      { string: 0, fret: "0" },
+      { string: 6, fret: "0" },
+      { string: 0, fret: "0" },
+      { string: 4, fret: "2" },
+      { string: 0, fret: "0" },
+    ],
+    melody_line: [
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+    ]
+  },
+  "E" => {
+    bass_line: [
+      { string: 6, fret: "0" },
+      { string: 0, fret: "0" },
+      { string: 4, fret: "2" },
+      { string: 0, fret: "0" },
+      { string: 5, fret: "2" },
+      { string: 0, fret: "0" },
+      { string: 4, fret: "2" },
+      { string: 0, fret: "0" },
+    ],
+    melody_line: [
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+      { string: 1, fret: "0" },
+    ]
+  },
+  "G" => {
+    bass_line: [
+      { string: 6, fret: "3" },
+      { string: 0, fret: "0" },
+      { string: 4, fret: "0" },
+      { string: 0, fret: "0" },
+      { string: 5, fret: "2" },
+      { string: 0, fret: "0" },
+      { string: 4, fret: "0" },
+      { string: 0, fret: "0" },
+    ],
+    melody_line: [
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+      { string: 1, fret: "3" },
+    ]
+  },
 }
 
 class RudimentPDFGenerator
