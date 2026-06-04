@@ -1,5 +1,5 @@
 RUDIMENTS_PER_PAGE = 5
-TAB_LINE_SPACING = 15
+TAB_LINE_SPACING = 10
 RUDIMENT_SPACING = 50
 TAB_LINES = 6
 BARS_PER_LINE = 4
@@ -187,12 +187,24 @@ class RudimentPDFGenerator
     end
   end
 
+  def add_header(key)
+    @rudiments_pdf.font_size(20) do
+      @rudiments_pdf.text "Fingerstyle Five Most Used Rudiments"
+    end
+    @rudiments_pdf.font_size(16) do
+      @rudiments_pdf.text "Rudiments for key of #{key}"
+    end
+  end
+
+  def add_page_numbers
+    @rudiments_pdf.number_pages "Page <page> of <total>", at: [@rudiments_pdf.bounds.right - 100, 0]
+  end
+
   def generate(rudiment_count, output_file, key, number_of_rudiments)
     Prawn::Document.generate(output_file) do |rudiments_pdf|
       @rudiments_pdf = rudiments_pdf
-      @rudiments_pdf.text "Rudiments!"
       x_0 = 0
-      y_0 = 670
+      y_0 = 640
       width = 512
 
       number_of_pages = (number_of_rudiments.to_f / RUDIMENTS_PER_PAGE.to_f).ceil
@@ -202,19 +214,22 @@ class RudimentPDFGenerator
 
       rudiments_pdf.font_size(10) do
         (1..number_of_pages).each do |page|
+          add_header(key)
+          cur_y = y_0
           (1..RUDIMENTS_PER_PAGE).each do |i|
-            #(1..number_of_rudiments).each do |i|
             rudiment = rc[rc_element][0]
-            draw_tab(x_0, y_0, width, TAB_LINE_SPACING, key, rudiment)
-            y_0 -= ((RUDIMENTS_PER_PAGE-1)*TAB_LINE_SPACING + RUDIMENT_SPACING)
+            draw_tab(x_0, cur_y, width, TAB_LINE_SPACING, key, rudiment)
+            cur_y -= ((RUDIMENTS_PER_PAGE-1)*TAB_LINE_SPACING + RUDIMENT_SPACING)
             rc_element += 1
+
+            break if rc_element >= number_of_rudiments
           end
-          x_0 = 0
-          y_0 = 670
-          width = 512
+
+
           @rudiments_pdf.start_new_page unless page == number_of_pages
         end
-        @rudiments_pdf.number_pages "Page <page> of <total>", at: [@rudiments_pdf.bounds.right - 100, 0]
+
+        add_page_numbers
       end
     end
   end
