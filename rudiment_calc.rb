@@ -22,7 +22,7 @@ end
 parser.on('-v', '--verbose', 'Print everything') do |value|
   options[:verbose] = true
 end
-parser.on('-p', '--print_histogram', 'Print everything') do |value|
+parser.on('-p', '--print_histogram', 'Print histogram') do |value|
   options[:print_histogram] = true
 end
 parser.on('-o OUTPUT_FILE', '--output_file', 'Output PDF file') do |value|

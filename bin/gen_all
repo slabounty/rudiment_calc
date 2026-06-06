@@ -1,0 +1,9 @@
+#!/bin/bash
+
+for key in C G D A E
+do
+  ruby rudiment_calc.rb tunes.txt \
+    --key "$key" \
+    --output_file "${key}_rudiments.pdf" \
+    -n 10
+done
