@@ -125,7 +125,19 @@ class RudimentPDFGenerator
   def initialize
   end
 
-  def draw_bar(bar_x, y_0, three_height, rudiment_chars, key_values)
+  def draw_melody_line?(bar, empty_measures)
+    if empty_measures == "NONE"
+      return true
+    elsif empty_measures == "ALT" && ((bar % 2) == 1)
+      return true
+    elsif (empty_measures == "END") && ([1, 2].include?(bar))
+      return true
+    else
+      return false
+    end
+  end
+
+  def draw_bar(bar_x, y_0, three_height, rudiment_chars, key_values, bar, empty_measures)
     rudiment_chars.each_with_index do |c, i|
       @rudiments_pdf.float do
         case c
@@ -133,9 +145,11 @@ class RudimentPDFGenerator
           @rudiments_pdf.text_box key_values[:bass_line][i][:fret],
             at: [bar_x,
                  y_0 + three_height/3 - (key_values[:bass_line][i][:string]-1)*TAB_LINE_SPACING]
-          @rudiments_pdf.text_box key_values[:melody_line][i][:fret],
-            at: [bar_x,
-                 y_0 + three_height/3 - (key_values[:melody_line][i][:string]-1)*TAB_LINE_SPACING]
+          if draw_melody_line?(bar, empty_measures)
+            @rudiments_pdf.text_box key_values[:melody_line][i][:fret],
+              at: [bar_x,
+                   y_0 + three_height/3 - (key_values[:melody_line][i][:string]-1)*TAB_LINE_SPACING]
+          end
           bar_x = bar_x+NOTE_SPACING
         when "t"
           @rudiments_pdf.text_box key_values[:bass_line][i][:fret],
@@ -143,9 +157,11 @@ class RudimentPDFGenerator
                  y_0 + three_height/3 - (key_values[:bass_line][i][:string]-1)*TAB_LINE_SPACING]
           bar_x = bar_x+NOTE_SPACING
         when "f"
-          @rudiments_pdf.text_box key_values[:melody_line][i][:fret],
-            at: [bar_x,
-                 y_0 + three_height/3 - (key_values[:melody_line][i][:string]-1)*TAB_LINE_SPACING]
+          if draw_melody_line?(bar, empty_measures)
+            @rudiments_pdf.text_box key_values[:melody_line][i][:fret],
+              at: [bar_x,
+                   y_0 + three_height/3 - (key_values[:melody_line][i][:string]-1)*TAB_LINE_SPACING]
+          end
           bar_x = bar_x+NOTE_SPACING
         when "0"
           bar_x = bar_x+NOTE_SPACING
@@ -154,18 +170,18 @@ class RudimentPDFGenerator
     end
   end
 
-  def draw_rudiment_line(y_0, key, rudiment)
+  def draw_rudiment_line(y_0, key, rudiment, empty_measures)
     rudiment_chars = rudiment.chars
     key_values = KEYS[key]
     three_height = @rudiments_pdf.height_of("3")
     cur_x = X_0+NOTE_SPACING/2
     (1..BARS_PER_LINE).each do |bar|
-      draw_bar(cur_x, y_0, three_height, rudiment_chars, key_values)
+      draw_bar(cur_x, y_0, three_height, rudiment_chars, key_values, bar, empty_measures)
       cur_x += WIDTH/4
     end
   end
 
-  def draw_tab(y_0, key, rudiment)
+  def draw_tab(y_0, key, rudiment, empty_measures)
     @rudiments_pdf.stroke do
       # just lower the current y position
       cur_x = X_0
@@ -189,7 +205,7 @@ class RudimentPDFGenerator
       end
 
       # Draw notes
-      draw_rudiment_line(y_0, key, rudiment)
+      draw_rudiment_line(y_0, key, rudiment, empty_measures)
     end
   end
 
@@ -206,7 +222,7 @@ class RudimentPDFGenerator
     @rudiments_pdf.number_pages "Page <page> of <total>", at: [@rudiments_pdf.bounds.right - 100, 0]
   end
 
-  def generate(rudiment_count, output_file, key, number_of_rudiments)
+  def generate(rudiment_count, output_file, key, number_of_rudiments, empty_measures)
     Prawn::Document.generate(output_file) do |rudiments_pdf|
       @rudiments_pdf = rudiments_pdf
 
@@ -221,7 +237,7 @@ class RudimentPDFGenerator
           cur_y = Y_0
           (1..RUDIMENTS_PER_PAGE).each do |i|
             rudiment = rc[rc_element][0]
-            draw_tab(cur_y, key, rudiment)
+            draw_tab(cur_y, key, rudiment, empty_measures)
             cur_y -= ((RUDIMENTS_PER_PAGE-1)*TAB_LINE_SPACING + RUDIMENT_SPACING)
             rc_element += 1
 
