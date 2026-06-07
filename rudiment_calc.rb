@@ -12,6 +12,7 @@ options = {
   number_of_rudiments: 10,
   print_histogram: false,
   empty_measures: "NONE",
+  groove: "ALT",
 }
 parser = OptionParser.new
 parser.on("-k KEY", "--key", %w[C G D A E], "Key to generate rudiments in. Must be one of C, G, D, A, E") do |value|
@@ -32,6 +33,9 @@ end
 parser.on("-e EMPTY_MEASURES", "--empty_measures", %w[NONE ALT END], "Empty/bass only measures. Must be one of NONE, ALT, END") do |value|
   options[:empty_measures] = value
 end
+parser.on("-g GROOVE", "--groove", %w[ALT STEADY], "Empty/bass only measures. Must be one of NONE, ALT, END") do |value|
+  options[:groove] = value
+end
 parser.parse!
 puts "options = #{options}" if options[:verbose]
 
@@ -41,4 +45,4 @@ rudiment_count = histogram.generate_histogram(ARGV[0])
 histogram.print_histogram if options[:print_histogram]
 
 rudiment_pdf_generator = RudimentPDFGenerator.new
-rudiment_pdf_generator.generate(rudiment_count, options[:output_file], options[:key], options[:number_of_rudiments], options[:empty_measures])
+rudiment_pdf_generator.generate(rudiment_count, options[:output_file], options[:key], options[:number_of_rudiments], options[:empty_measures], options[:groove])
