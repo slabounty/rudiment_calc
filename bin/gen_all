@@ -1,9 +1,15 @@
 #!/bin/bash
 
-for key in C G D A E
+mkdir -p output
+for groove in ALT STEADY
 do
-  ruby rudiment_calc.rb tunes.txt \
-    --key "$key" \
-    --output_file "${key}_rudiments.pdf" \
-    -n 10
+  for key in C G D A E
+  do
+    ruby rudiment_calc.rb tunes.txt \
+      --key "$key" \
+      --empty_measures ALT \
+      --output_file "output/${key}_rudiments_${groove}_BASS.pdf" \
+      -n 10 \
+      --groove "$groove"
+  done
 done
