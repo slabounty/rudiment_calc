@@ -14,30 +14,40 @@ options = {
   empty_measures: "NONE",
   groove: "ALT",
 }
-parser = OptionParser.new
-parser.on("-k KEY", "--key", %w[C G D A E], "Key to generate rudiments in. Must be one of C, G, D, A, E") do |value|
-  options[:key] = value
+parser = OptionParser.new do |opts|
+  opts.on("-k KEY", "--key", %w[C G D A E], "Key to generate rudiments in. Must be one of C, G, D, A, E") do |value|
+    options[:key] = value
+  end
+  opts.on("-n COUNT", "--number_of_rudiments", "Number of rudiments") do |value|
+    options[:number_of_rudiments] = value.to_i
+  end
+  opts.on("-v", "--verbose", "Print everything") do |value|
+    options[:verbose] = true
+  end
+  opts.on("-p", "--print_histogram", "Print histogram") do |value|
+    options[:print_histogram] = true
+  end
+  opts.on("-o OUTPUT_FILE", "--output_file", "Output PDF file") do |value|
+    options[:output_file] = value
+  end
+  opts.on("-e EMPTY_MEASURES", "--empty_measures", %w[NONE ALT END], "Empty/bass only measures. Must be one of NONE, ALT, END") do |value|
+    options[:empty_measures] = value
+  end
+  opts.on("-g GROOVE", "--groove", %w[ALT STEADY], "Empty/bass only measures. Must be one of NONE, ALT, END") do |value|
+    options[:groove] = value
+  end
 end
-parser.on("-n COUNT", "--number_of_rudiments", "Number of rudiments") do |value|
-  options[:number_of_rudiments] = value.to_i
+
+begin
+  parser.parse!
+rescue OptionParser::ParseError => e
+  # Handle invalid choices, missing arguments, or type mismatches
+  puts "Error: #{e.message}"
+  puts parser
+  exit 1
 end
-parser.on("-v", "--verbose", "Print everything") do |value|
-  options[:verbose] = true
-end
-parser.on("-p", "--print_histogram", "Print histogram") do |value|
-  options[:print_histogram] = true
-end
-parser.on("-o OUTPUT_FILE", "--output_file", "Output PDF file") do |value|
-  options[:output_file] = value
-end
-parser.on("-e EMPTY_MEASURES", "--empty_measures", %w[NONE ALT END], "Empty/bass only measures. Must be one of NONE, ALT, END") do |value|
-  options[:empty_measures] = value
-end
-parser.on("-g GROOVE", "--groove", %w[ALT STEADY], "Empty/bass only measures. Must be one of NONE, ALT, END") do |value|
-  options[:groove] = value
-end
-parser.parse!
-puts "options = #{options}" if options[:verbose]
+
+puts parser if options[:verbose]
 
 # Generate and print histogram
 histogram = Histogram.new
